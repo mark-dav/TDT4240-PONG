@@ -20,8 +20,11 @@ public class Main extends ApplicationAdapter {
     private static final float PADDLE_OFFSET = 50;
     private static final int BALL_SIZE = 15;
     private static final float PADDLE_SPEED = 300f;
-    private static final float AI_PADDLE_SPEED = 100f;
-    private static final float BALL_SPEED = 300f;
+    private static final float AI_PADDLE_SPEED = 250f;
+    private static final float BALL_BASE_SPEED = 300f;
+    private static final float SPEED_INCREASE_INTERVAL = 3.0f;
+    private static final float SPEED_MULTIPLIER = 1.15f;
+    private static final float MAX_SPEED_MULTIPLIER = 2.5f;
     private static final int WINNING_SCORE = 21;
     private float leftPaddleY;
     private float rightPaddleY;
@@ -29,10 +32,12 @@ public class Main extends ApplicationAdapter {
     private float ballY;
     private float ballVelocityX;
     private float ballVelocityY;
+    private float currentSpeedMultiplier;
     private int playerScore;
     private int aiScore;
     private boolean gameOver;
     private String winnerText;
+    private float rallyTimer;
 
     @Override
     public void create() {
@@ -62,6 +67,11 @@ public class Main extends ApplicationAdapter {
     public void render() {
         float deltaTime = Gdx.graphics.getDeltaTime();
         if (!gameOver) {
+            if (rallyTimer >= SPEED_INCREASE_INTERVAL && currentSpeedMultiplier < MAX_SPEED_MULTIPLIER) {
+                increaseSpeed();
+                rallyTimer = 0;
+            }
+
             // Handle touch input for player paddle
             handleInput(deltaTime);
 
@@ -128,13 +138,27 @@ public class Main extends ApplicationAdapter {
             shapeRenderer.rect(centerX, y, lineWidth, dashHeight);
         }
     }
+
+    private void increaseSpeed() {
+        currentSpeedMultiplier = Math.min(currentSpeedMultiplier * SPEED_MULTIPLIER, MAX_SPEED_MULTIPLIER);
+
+        float currentSpeed = (float) Math.sqrt(ballVelocityX * ballVelocityX + ballVelocityY * ballVelocityY);
+        float newSpeed = BALL_BASE_SPEED * currentSpeedMultiplier;
+        float speedRatio = newSpeed / currentSpeed;
+
+        ballVelocityX *= speedRatio;
+        ballVelocityY *= speedRatio;
+    }
     private void resetBall() {
         ballX = screenWidth / 2 - BALL_SIZE / 2;
         ballY = screenHeight / 2 - BALL_SIZE / 2;
 
-        // Random starting direction
-        ballVelocityX = BALL_SPEED * (Math.random() > 0.5 ? 1 : -1);
-        ballVelocityY = BALL_SPEED * (Math.random() > 0.5 ? 1 : -1) * 0.5f;
+        currentSpeedMultiplier = 1.0f;
+        rallyTimer = 0;
+
+        float speed = BALL_BASE_SPEED * currentSpeedMultiplier;
+        ballVelocityX = speed * (Math.random() > 0.5 ? 1 : -1);
+        ballVelocityY = speed * (Math.random() > 0.5 ? 1 : -1) * 0.5f;
     }
     private void updateBall(float deltaTime) {
         // Update ball position
@@ -152,8 +176,20 @@ public class Main extends ApplicationAdapter {
             ballX >= PADDLE_OFFSET &&
             ballY + BALL_SIZE >= leftPaddleY &&
             ballY <= leftPaddleY + PADDLE_HEIGHT) {
-            ballVelocityX = Math.abs(ballVelocityX); // Ensure it goes right
+            ballVelocityX = Math.abs(ballVelocityX);
             ballX = PADDLE_OFFSET + PADDLE_WIDTH;
+
+            // Ball collision depending on which part of the paddle makes contact
+            float paddleCenter = leftPaddleY + PADDLE_HEIGHT / 2;
+            float ballCenter = ballY + BALL_SIZE / 2;
+            float hitOffset = (ballCenter - paddleCenter) / (PADDLE_HEIGHT / 2);
+
+            boolean hitEdge = Math.abs(hitOffset) > 0.6f;
+            if (hitEdge && currentSpeedMultiplier < MAX_SPEED_MULTIPLIER) {
+                increaseSpeed();
+                rallyTimer = 0;
+            }
+            ballVelocityY = hitOffset * BALL_BASE_SPEED * currentSpeedMultiplier * 0.75f;
         }
 
         // Ball collision with right paddle
@@ -161,8 +197,19 @@ public class Main extends ApplicationAdapter {
             ballX + BALL_SIZE <= screenWidth - PADDLE_OFFSET &&
             ballY + BALL_SIZE >= rightPaddleY &&
             ballY <= rightPaddleY + PADDLE_HEIGHT) {
-            ballVelocityX = -Math.abs(ballVelocityX); // Ensure it goes left
+            ballVelocityX = -Math.abs(ballVelocityX);
             ballX = screenWidth - PADDLE_OFFSET - PADDLE_WIDTH - BALL_SIZE;
+
+            float paddleCenter = rightPaddleY + PADDLE_HEIGHT / 2;
+            float ballCenter = ballY + BALL_SIZE / 2;
+            float hitOffset = (ballCenter - paddleCenter) / (PADDLE_HEIGHT / 2);
+
+            boolean hitEdge = Math.abs(hitOffset) > 0.6f;
+            if (hitEdge && currentSpeedMultiplier < MAX_SPEED_MULTIPLIER) {
+                increaseSpeed();
+                rallyTimer = 0;
+            }
+            ballVelocityY = hitOffset * BALL_BASE_SPEED * currentSpeedMultiplier * 0.75f;
         }
 
         // Check for goals, update score
