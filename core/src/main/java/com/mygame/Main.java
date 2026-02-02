@@ -92,8 +92,10 @@ public class Main extends ApplicationAdapter {
         // Elements
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(Color.WHITE);
+
         // Midfield line
         drawDashedLine();
+
         // Draw left paddle
         shapeRenderer.rect(PADDLE_OFFSET, leftPaddleY, PADDLE_WIDTH, PADDLE_HEIGHT);
 
@@ -233,22 +235,16 @@ public class Main extends ApplicationAdapter {
         if (Gdx.input.isTouched()) {
             // Get touch position (Y coordinate)
             int touchY = Gdx.input.getY();
-
-            // Convert to game coordinates (libGDX has Y at bottom, touch has Y at top)
             float targetY = screenHeight - touchY - PADDLE_HEIGHT / 2;
 
             // Move paddle toward touch position
             float difference = targetY - leftPaddleY;
-
             if (Math.abs(difference) > PADDLE_SPEED * deltaTime) {
-                // Move paddle at constant speed toward target
                 leftPaddleY += Math.signum(difference) * PADDLE_SPEED * deltaTime;
             } else {
-                // Snap to target if close enough
                 leftPaddleY = targetY;
             }
 
-            // Keep paddle within screen bounds
             leftPaddleY = Math.max(0, Math.min(screenHeight - PADDLE_HEIGHT, leftPaddleY));
         }
     }
