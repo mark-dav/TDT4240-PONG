@@ -12,7 +12,7 @@
       tools:ignore="UnusedAttribute"
       android:theme="@style/GdxTheme">
     <activity
-        android:name="com.mygame.android.AndroidLauncher"
+        android:name="com.pong.android.AndroidLauncher"
         android:label="@string/app_name"
         android:screenOrientation="landscape"
         android:configChanges="keyboard|keyboardHidden|navigation|orientation|screenSize|screenLayout"

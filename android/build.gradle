@@ -9,7 +9,7 @@ apply plugin: 'com.android.application'
 
 
 android {
-  namespace = "com.mygame"
+  namespace = "com.pong"
   compileSdk = 35
   sourceSets {
     main {

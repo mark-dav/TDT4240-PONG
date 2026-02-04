@@ -1,10 +1,10 @@
-package com.mygame.android;
+package com.pong.android;
 
 import android.os.Bundle;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import com.mygame.Main;
+import com.pong.launcher.Main;
 
 /** Launches the Android application. */
 public class AndroidLauncher extends AndroidApplication {
