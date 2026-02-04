@@ -11,8 +11,6 @@ import com.pong.model.Ball;
 import com.pong.model.Paddle;
 import com.pong.model.Score;
 
-import javax.naming.ldap.Control;
-
 public class PongScreen {
     private int screenHeight;
     private int screenWidth;

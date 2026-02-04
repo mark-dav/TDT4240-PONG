@@ -1,9 +1,6 @@
 package com.pong.controller;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.pong.model.AI;
 import com.pong.model.Paddle;
 import com.pong.model.Ball;
@@ -180,7 +177,7 @@ public class Controller {
     }
     private void updateAI(float deltaTime) {
         // AI tracks the ball's Y position
-        float newPaddleY = ai.update(rightPaddle.getPaddleY(), rightPaddle.getPaddleSpeed(), deltaTime, ball.getBallX(), ball.getBallY(), ball.getVelocityX(), Ball.BALL_SIZE, Paddle.PADDLE_HEIGHT, screenHeight);
+        float newPaddleY = ai.update(rightPaddle.getPaddleY(), rightPaddle.getPaddleSpeed(), deltaTime, ball.getBallY(), ball.getVelocityX(), Ball.BALL_SIZE, Paddle.PADDLE_HEIGHT, screenHeight);
         rightPaddle.update(newPaddleY);
     }
 
