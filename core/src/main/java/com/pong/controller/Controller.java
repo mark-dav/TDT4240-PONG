@@ -105,10 +105,10 @@ public class Controller {
         ball.wallCollision(screenHeight);
 
         // Ball collision with left paddle
-        paddleCollision(leftPaddle);
+        paddleCollision(leftPaddle, true);
 
         // Ball collision with right paddle
-        paddleCollision(rightPaddle);
+        paddleCollision(rightPaddle, false);
 
         // Checks whether player 1 or player 2 have scored. Returns 0 if neither have scored.
         int goalscorer = ball.checkGoal(screenWidth);
@@ -125,7 +125,7 @@ public class Controller {
         }
     }
 
-    private void paddleCollision (Paddle paddle) {
+    private void paddleCollision (Paddle paddle, boolean isLeft) {
         float ballX = ball.getBallX();
         float ballY = ball.getBallY();
         float ballSize = Ball.BALL_SIZE;
@@ -134,27 +134,29 @@ public class Controller {
         float paddleOffset = Paddle.PADDLE_OFFSET;
         float paddleWidth = Paddle.PADDLE_WIDTH;
         float paddleHeight = Paddle.PADDLE_HEIGHT;
-
         // Left paddle
-        if (ballX <= paddleOffset + paddleWidth &&
-            ballX >= paddleOffset &&
-            ballY + ballSize >= paddleY &&
-            ballY <= paddleY + paddleHeight) {
+        if (isLeft) {
+            if (ballX <= paddleOffset + paddleWidth &&
+                ballX >= paddleOffset &&
+                ballY + ballSize >= paddleY &&
+                ballY <= paddleY + paddleHeight) {
 
-            // Ball collision depending on which part of the paddle makes contact
-            float hitOffset = calculateHitOffset(paddleY, paddleHeight, ballY, ballSize);
-            ball.paddleCollision(true, screenWidth, paddleOffset, paddleWidth, hitOffset);
+                // Ball collision depending on which part of the paddle makes contact
+                float hitOffset = calculateHitOffset(paddleY, paddleHeight, ballY, ballSize);
+                ball.paddleCollision(true, screenWidth, paddleOffset, paddleWidth, hitOffset);
+            }
         }
-
         // Right paddle
-        else if (ballX + ballSize >= screenWidth - paddleOffset - paddleWidth &&
-            ballX + ballSize <= screenWidth - paddleOffset &&
-            ballY + ballSize >= paddleY &&
-            ballY <= paddleY + paddleHeight) {
+        else {
+            if (ballX + ballSize >= screenWidth - paddleOffset - paddleWidth &&
+                ballX + ballSize <= screenWidth - paddleOffset &&
+                ballY + ballSize >= paddleY &&
+                ballY <= paddleY + paddleHeight) {
 
-            // Ball collision depending on which part of the paddle makes contact
-            float hitOffset = calculateHitOffset(paddleY, paddleHeight, ballY, ballSize);
-            ball.paddleCollision(false, screenWidth, paddleOffset, paddleWidth, hitOffset);
+                // Ball collision depending on which part of the paddle makes contact
+                float hitOffset = calculateHitOffset(paddleY, paddleHeight, ballY, ballSize);
+                ball.paddleCollision(false, screenWidth, paddleOffset, paddleWidth, hitOffset);
+            }
         }
     }
     private float calculateHitOffset (float paddleY, float paddleHeight, float ballY, float ballSize) {
